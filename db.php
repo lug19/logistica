@@ -5,8 +5,8 @@ $conn = mysqli_connect(
     'root',
     '',
     'logistica'
-    )
+);
 
-    if(isset($conn)){
-        echo "database is connected";
-    }
+    //if(isset($conn)){  echo "database is connected"    }
+
+    ?>
