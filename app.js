@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    let edit= false
     console.log('jQuery esta funcionando')
     $('#item-result').hide();
     cambioItems();
@@ -30,9 +31,14 @@ $(document).ready(function(){
         const postData = {
             name: $('#name').val(),
             description: $('#description').val(),
+            id: $('#itemID').val(),
 
         };
-        $.post('item-add.php', postData, function(response){ 
+        let url= edit === false ? 'item-add.php' :'edit-item.php';
+        console.log(url);
+
+        $.post(url, postData, function(response){ 
+            console.log(response)
             cambioItems();
         $('#item-form').trigger('reset');
     });
@@ -48,14 +54,18 @@ $(document).ready(function(){
            let template = '';
            items.forEach(item => {
                template +=`
-               <tr>
+               <tr itemId="${item.id}">
                     <td>${item.id}</td>
-                    <td>${item.name}</td>
+                    <td>
+                        <a href="#" class="item-item">
+                    ${item.name}</a>
+                    
+                    </td>
                     <td>${item.description}</td>
                     <td>
-                    <button CLASS="item-delete btn btn-danger">
-                      Delete
-                    </button>
+                        <button CLASS="item-delete btn btn-danger">
+                        Delete
+                        </button>
                     </td>
                </tr>
                `
@@ -65,6 +75,25 @@ $(document).ready(function(){
         });
   }
 
-  $(document).on('click', item-delete)
+        $(document).on('click', '.item-delete', function() {
+            if(confirm('Are you sure wanna delete it?')) {
+                let element = $(this)[0].parentElement.parentElement;
+                let id = $(element).attr('itemId');
+            $.post('item-delete.php',{id}, function (response) {
+                cambioItems();
+            })
+            }
+        })
+        $(document).on('click','.item-item',function(){
+            let element = $(this)[0].parentElement.parentElement;
+            let id = $(element).attr('itemId');
+            $.post('item-edit.php',{id}, function (response) {
+                const item =JSON.parse(response);
+                $('#name').val(item.name);
+                $('#description').val(item.description);
+                $('#itemID').val(item.id);
+                edit=true;
+           })
+        });
 
-});
+})
